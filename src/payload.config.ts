@@ -21,8 +21,14 @@ export default buildConfig({
   collections: [Users, Media],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET!,
-  cors: [process.env.NEXT_PUBLIC_SERVER_URL!].filter(Boolean),
-  csrf: [process.env.NEXT_PUBLIC_SERVER_URL!].filter(Boolean),
+  cors: [
+    process.env.NEXT_PUBLIC_SERVER_URL!,
+    process.env.SHORT_SERVICE_SERVER_URL!,
+  ].filter(Boolean),
+  csrf: [
+    process.env.NEXT_PUBLIC_SERVER_URL!,
+    process.env.SHORT_SERVICE_SERVER_URL!,
+  ].filter(Boolean),
   serverURL: process.env.NEXT_PUBLIC_SERVER_URL,
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
