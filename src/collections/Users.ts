@@ -9,7 +9,7 @@ export const Users: CollectionConfig = {
     loginWithUsername: {
       allowEmailLogin: true,
       requireUsername: true,
-      requireEmail: false
+      requireEmail: false,
     },
     cookies: {
       domain: '.devslix.com', // Sab se important line: Cookie ab saare subdomains par chalegi
