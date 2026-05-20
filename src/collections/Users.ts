@@ -25,7 +25,7 @@ export const Users: CollectionConfig = {
     path: '/verify-session',
     method: 'get',
     handler: async (req) => {
-      console.log({ userFromAnotherService: req.user })
+      console.log({ userFromAnotherService: req.user, headers: req.headers.get('cookie') })
       // Agar payload context me user nahi mila
       if (!req.user) {
         return Response.json({ authenticated: false }, { status: 401 })
