@@ -26,15 +26,29 @@ export const Users: CollectionConfig = {
     method: 'get',
     handler: async (req) => {
       console.log({ user: req.user })
+      // Agar payload context me user nahi mila
       if (!req.user) {
-        return Response.json({ authenticated: false }, {
-          status: 401
-        })
+        return Response.json({ authenticated: false }, { status: 401 })
+      }
+
+      // Payload local API se database se user ka fresh record nikallein ID ke zariye
+      // Taake email har haal me mile, chahe token me ho ya na ho
+      const fullUser = await req.payload.findByID({
+        collection: 'users',
+        id: req.user.id,
+      })
+
+      if (!fullUser || !fullUser.email) {
+        return Response.json({ authenticated: false, message: 'Email missing in central DB' }, { status: 401 })
       }
 
       return Response.json({
         authenticated: true,
-        user: req.user
+        user: {
+          id: fullUser.id,
+          email: fullUser.email,
+          name: fullUser.username || 'SSO User',
+        }
       })
     }
   }]
