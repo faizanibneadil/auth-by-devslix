@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { parseCookies } from 'payload/shared'
 
 export const Users: CollectionConfig = {
   slug: 'users',
@@ -25,7 +26,11 @@ export const Users: CollectionConfig = {
     path: '/verify-session',
     method: 'get',
     handler: async (req) => {
-      console.log({ userFromAnotherService: req.user, headers: req.headers.get('cookie') })
+      console.log({
+        userFromAnotherService: req.user,
+        headers: req.headers.get('cookie'),
+        cookie: parseCookies(req.headers)
+      })
       // Agar payload context me user nahi mila
       if (!req.user) {
         return Response.json({ authenticated: false }, { status: 401 })
