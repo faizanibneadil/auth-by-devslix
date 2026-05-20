@@ -25,7 +25,7 @@ export const Users: CollectionConfig = {
     path: '/verify-session',
     method: 'get',
     handler: async (req) => {
-
+      console.log({ user: req.user })
       if (!req.user) {
         return Response.json({ authenticated: false }, {
           status: 401
