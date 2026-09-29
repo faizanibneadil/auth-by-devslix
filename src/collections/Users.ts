@@ -19,42 +19,57 @@ export const Users: CollectionConfig = {
     },
   },
   fields: [
-    // Email added by default
-    // Add more fields as needed
+    {
+      name: 'googleId',
+      type: 'text',
+      admin: {
+        readOnly: true,
+      },
+    },
+    {
+      name: 'avatarUrl',
+      type: 'text',
+    },
+    {
+      name: 'authProvider',
+      type: 'select',
+      defaultValue: 'local',
+      options: [
+        { label: 'Local', value: 'local' },
+        { label: 'Google', value: 'google' },
+      ],
+    },
   ],
-  endpoints: [{
-    path: '/verify-session',
-    method: 'get',
-    handler: async (req) => {
-      console.log({
-        userFromAnotherService: req.user,
-        headers: req.headers.get('cookie'),
-        cookie: parseCookies(req.headers)
-      })
-      // Agar payload context me user nahi mila
-      if (!req.user) {
-        return Response.json({ authenticated: false }, { status: 401 })
-      }
-
-      // Payload local API se database se user ka fresh record nikallein ID ke zariye
-      // Taake email har haal me mile, chahe token me ho ya na ho
-      const fullUser = await req.payload.findByID({
-        collection: 'users',
-        id: req.user.id,
-      })
-
-      if (!fullUser || !fullUser.email) {
-        return Response.json({ authenticated: false, message: 'Email missing in central DB' }, { status: 401 })
-      }
-
-      return Response.json({
-        authenticated: true,
-        user: {
-          id: fullUser.id,
-          email: fullUser.email,
-          name: fullUser.username || 'SSO User',
+  endpoints: [
+    {
+      path: '/verify-session',
+      method: 'get',
+      handler: async (req) => {
+        if (!req.user) {
+          return Response.json({ authenticated: false }, { status: 401 })
         }
-      })
-    }
-  }]
+
+        const fullUser = await req.payload.findByID({
+          collection: 'users',
+          id: req.user.id,
+        })
+
+        if (!fullUser || !fullUser.email) {
+          return Response.json({ authenticated: false, message: 'Email missing in central DB' }, { status: 401 })
+        }
+
+        return Response.json({
+          authenticated: true,
+          user: {
+            id: fullUser.id,
+            email: fullUser.email,
+            username: fullUser.username || '',
+            name: fullUser.username || fullUser.email.split('@')[0] || 'SSO User',
+            avatarUrl: fullUser.avatarUrl || null,
+            authProvider: fullUser.authProvider || 'local',
+          },
+        })
+      },
+    },
+  ],
 }
